@@ -185,9 +185,6 @@ const Contact = () => {
           <p className="text-gray-500 text-sm font-mono">
             © {new Date().getFullYear()} Kavindu. All rights reserved.
           </p>
-          <div className="text-gray-500 text-sm font-mono flex items-center gap-2">
-            Designed with <span className="text-emerald-500">♥</span> in SL
-          </div>
         </motion.div>
       </motion.div>
     </section>

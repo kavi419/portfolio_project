@@ -44,6 +44,15 @@ const certificatesData = [
     file: "/certificates/ai-ml-stage-3.pdf",
     color: "from-emerald-500/20 to-transparent",
     iconColor: "text-emerald-400"
+  },
+  {
+    id: 4,
+    title: "Basic Java Developments",
+    issuer: "DIGIMAX Edu LK",
+    date: "Mar 2023",
+    file: "/certificates/basic-java.jpg",
+    color: "from-orange-500/20 to-transparent",
+    iconColor: "text-orange-400"
   }
 ];
 
@@ -155,7 +164,7 @@ const Certificates = () => {
                 </button>
               </div>
               
-              {/* PDF Viewer */}
+              {/* Document Viewer */}
               <div className="flex-1 w-full bg-neutral-800 relative">
                 {/* Fallback/Loading state behind iframe */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
@@ -165,11 +174,19 @@ const Certificates = () => {
                   <p>Loading document...</p>
                 </div>
                 
-                <iframe 
-                  src={`${selectedCert.file}#view=FitH`} 
-                  className="absolute inset-0 w-full h-full border-none z-10"
-                  title={selectedCert.title}
-                />
+                {selectedCert.file.match(/\.(jpeg|jpg|gif|png)$/i) != null ? (
+                  <img 
+                    src={selectedCert.file} 
+                    alt={selectedCert.title} 
+                    className="absolute inset-0 w-full h-full object-contain z-10 bg-neutral-900"
+                  />
+                ) : (
+                  <iframe 
+                    src={`${selectedCert.file}#view=FitH`} 
+                    className="absolute inset-0 w-full h-full border-none z-10 bg-white"
+                    title={selectedCert.title}
+                  />
+                )}
               </div>
             </motion.div>
           </motion.div>
