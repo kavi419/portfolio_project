@@ -10,12 +10,7 @@
     scroll-behavior: smooth;
   }
   
-  /* Hide cursor on desktop since we have a custom one */
-  @media (min-width: 768px) {
-    * {
-      cursor: none !important;
-    }
-  }
+
 
   body {
     @apply transition-colors duration-300;

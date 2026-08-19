@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import LoadingScreen from './components/LoadingScreen';
-import CustomCursor from './components/CustomCursor';
+
 import Hero from './components/Hero';
 import WhoIAm from './components/WhoIAm';
 import BentoGrid from './components/BentoGrid';
@@ -28,7 +28,6 @@ const App = () => {
 
   return (
     <div className="bg-black text-gray-100 min-h-screen selection:bg-emerald-500/30 font-sans">
-      <CustomCursor />
       
       <AnimatePresence>
         {isLoading && <LoadingScreen key="loading" onLoadingComplete={() => setIsLoading(false)} />}
