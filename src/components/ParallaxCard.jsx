@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const ParallaxCard = ({ children, zIndex, bgClass = "bg-white" }) => {
+const ParallaxCard = ({ children, zIndex, bgClass = "bg-white", id }) => {
   const ref = useRef(null);
   const [height, setHeight] = useState(0);
 
@@ -33,6 +33,7 @@ const ParallaxCard = ({ children, zIndex, bgClass = "bg-white" }) => {
 
   return (
     <div 
+      id={id}
       ref={ref} 
       className="sticky w-full flex flex-col"
       style={{ 

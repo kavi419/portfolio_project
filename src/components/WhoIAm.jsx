@@ -1,7 +1,31 @@
-import React, { useRef } from 'react';
-import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Icosahedron } from '@react-three/drei';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useInView, animate } from 'framer-motion';
+
+import { certificatesData } from './Certificates';
+
+// CountUp Component for animated numbers
+const CountUp = ({ end, suffix = "+" }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(0, end, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate: (value) => {
+          setCount(Math.floor(value));
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, end]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
 
 // Interactive 3D Wireframe Node
 const SpinningShape = () => {
@@ -57,13 +81,13 @@ const statVariants = {
 };
 
 // Minimalist Stat Item
-const StatItem = ({ title, subtitle }) => (
+const StatItem = ({ endCount, subtitle }) => (
   <motion.div
     variants={statVariants}
     className="flex-1 flex flex-col items-center justify-center p-8 group cursor-pointer border-t md:border-t-0 md:border-l border-gray-200 first:border-0"
   >
     <h3 className="text-5xl lg:text-6xl font-light text-gray-900 mb-2 transition-transform duration-300 group-hover:-translate-y-2">
-      {title}
+      <CountUp end={endCount} />
     </h3>
     <p className="text-gray-400 text-xs font-bold tracking-[0.2em] uppercase text-center group-hover:text-gray-600 transition-colors duration-300">
       {subtitle}
@@ -72,6 +96,8 @@ const StatItem = ({ title, subtitle }) => (
 );
 
 const WhoIAm = () => {
+  const certCount = certificatesData.length > 0 ? certificatesData.length - 1 : 0;
+
   return (
     <section id="whoiam" className="relative w-full bg-white z-10 pt-32 pb-32">
       
@@ -125,10 +151,10 @@ const WhoIAm = () => {
           variants={itemVariants}
           className="flex flex-col md:flex-row border border-gray-200 rounded-3xl overflow-hidden shadow-sm bg-white"
         >
-          <StatItem title="10+" subtitle="Projects Completed" />
-          <StatItem title="8+" subtitle="Certificates Earned" />
-          <StatItem title="20+" subtitle="Technologies Learned" />
-          <StatItem title="3+" subtitle="Years of Learning" />
+          <StatItem endCount={10} subtitle="Projects Completed" />
+          <StatItem endCount={certCount} subtitle="Certificates Earned" />
+          <StatItem endCount={20} subtitle="Technologies Learned" />
+          <StatItem endCount={3} subtitle="Years of Learning" />
         </motion.div>
 
       </motion.div>

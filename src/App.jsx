@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import Lenis from 'lenis';
 import LoadingScreen from './components/LoadingScreen';
 
 import Hero from './components/Hero';
@@ -11,20 +12,100 @@ import Contact from './components/Contact';
 import ParallaxCard from './components/ParallaxCard';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
+import Sidebar from './components/Sidebar';
+
+const sections = ['hero', 'whoiam', 'skills', 'projects', 'certificates', 'contact'];
+
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { scrollY } = useScroll();
-  const [windowHeight, setWindowHeight] = useState(800);
 
   useEffect(() => {
-    setWindowHeight(window.innerHeight);
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (isLoading) return;
 
-  const navOpacity = useTransform(scrollY, [0, windowHeight * 0.8, windowHeight], [0, 0, 1]);
-  const navPointerEvents = useTransform(scrollY, [0, windowHeight * 0.8, windowHeight], ["none", "none", "auto"]);
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    let scrollTimeout;
+    let lastScrollY = window.scrollY;
+
+    lenis.on('scroll', (e) => {
+      clearTimeout(scrollTimeout);
+      
+      scrollTimeout = setTimeout(() => {
+        const currentScrollY = window.scrollY;
+        const scrollDirection = currentScrollY > lastScrollY ? 1 : -1;
+        lastScrollY = currentScrollY;
+
+        let targetScroll = -1;
+        let minDistance = Infinity;
+
+        // Collect all snap points
+        const snapPoints = sections.map(id => {
+          const wrapper = document.getElementById(`wrapper-${id}`);
+          return wrapper ? wrapper.offsetTop : 0;
+        }).filter(pos => pos !== undefined);
+
+        // Find the nearest snap point
+        snapPoints.forEach(pos => {
+          const distance = Math.abs(pos - currentScrollY);
+          if (distance < minDistance) {
+            minDistance = distance;
+            targetScroll = pos;
+          }
+        });
+
+        // If the user scrolled with momentum towards the next/prev section, 
+        // favor snapping to that section instead of snapping back.
+        if (Math.abs(e.velocity) > 0.5) {
+          const aheadPoints = snapPoints.filter(pos => 
+            scrollDirection > 0 ? pos > currentScrollY : pos < currentScrollY
+          );
+          
+          if (aheadPoints.length > 0) {
+            // Find the closest point in the direction of travel
+            let closestAhead = aheadPoints[0];
+            aheadPoints.forEach(pos => {
+              if (Math.abs(pos - currentScrollY) < Math.abs(closestAhead - currentScrollY)) {
+                closestAhead = pos;
+              }
+            });
+            
+            // If the closest ahead point is reasonably close, snap to it
+            if (Math.abs(closestAhead - currentScrollY) < window.innerHeight * 0.8) {
+              targetScroll = closestAhead;
+              minDistance = Math.abs(targetScroll - currentScrollY);
+            }
+          }
+        }
+
+        // Snap if we are within a reasonable distance (prevents snapping in the middle of a tall section)
+        if (targetScroll !== -1 && minDistance > 5 && minDistance < window.innerHeight * 0.6) {
+          lenis.scrollTo(targetScroll, { duration: 1.5, easing: (t) => 1 - Math.pow(1 - t, 4) });
+        }
+      }, 150); 
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      clearTimeout(scrollTimeout);
+    };
+  }, [isLoading]);
 
   return (
     <div className="bg-black text-gray-100 min-h-screen selection:bg-emerald-500/30 font-sans">
@@ -35,50 +116,30 @@ const App = () => {
 
       {!isLoading && (
         <div className="relative">
-          {/* Premium Navbar - Hidden on Hero */}
-          <motion.nav 
-            style={{ opacity: navOpacity, pointerEvents: navPointerEvents }}
-            className="fixed w-full top-0 z-50 glass bg-black/50 border-b-0 border-white/10"
-          >
-            <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-              <div className="font-bold text-xl tracking-tighter text-white">
-                KAVINDU<span className="text-emerald-500">.</span>
-              </div>
-              <div className="hidden md:flex gap-8 text-sm font-medium text-gray-400 uppercase tracking-widest">
-                <a href="#whoiam" className="hover:text-white transition-colors interactive">Who I Am</a>
-                <a href="#skills" className="hover:text-white transition-colors interactive">Skills</a>
-                <a href="#projects" className="hover:text-white transition-colors interactive">Projects</a>
-                <a href="#certificates" className="hover:text-white transition-colors interactive">Certificates</a>
-              </div>
-              <a href="#contact" className="hidden md:block px-5 py-2 rounded-full border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors text-xs tracking-widest uppercase interactive">
-                MENU
-              </a>
-            </div>
-          </motion.nav>
+          <Sidebar />
 
           <main className="relative w-full">
-            {/* Hero is the base layer, it scales down when WhoIAm slides over it */}
-            <ParallaxCard zIndex={0} bgClass="bg-black">
+            <ParallaxCard id="wrapper-hero" zIndex={0} bgClass="bg-black">
                <Hero />
             </ParallaxCard>
             
-            <ParallaxCard zIndex={10} bgClass="bg-white">
+            <ParallaxCard id="wrapper-whoiam" zIndex={10} bgClass="bg-white">
               <WhoIAm />
             </ParallaxCard>
 
-            <ParallaxCard zIndex={20} bgClass="bg-black">
+            <ParallaxCard id="wrapper-skills" zIndex={20} bgClass="bg-black">
               <BentoGrid />
             </ParallaxCard>
 
-            <ParallaxCard zIndex={30} bgClass="bg-white">
+            <ParallaxCard id="wrapper-projects" zIndex={30} bgClass="bg-white">
               <Projects />
             </ParallaxCard>
 
-            <ParallaxCard zIndex={40} bgClass="bg-black">
+            <ParallaxCard id="wrapper-certificates" zIndex={40} bgClass="bg-black">
               <Certificates />
             </ParallaxCard>
 
-            <ParallaxCard zIndex={50} bgClass="bg-white">
+            <ParallaxCard id="wrapper-contact" zIndex={50} bgClass="bg-white">
               <Contact />
             </ParallaxCard>
           </main>
