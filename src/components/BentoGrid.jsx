@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Database, Layout, Terminal, Code2, Globe } from 'lucide-react';
+import { Database, Layout, Terminal, Code2, Globe, Component, Monitor, Smartphone, Server, Cpu, FileCode2, HardDrive, Network, Layers } from 'lucide-react';
 
 // Premium Spotlight Card Component
 const SpotlightCard = ({ children, className = "" }) => {
@@ -98,12 +98,20 @@ const BentoGrid = () => {
   return (
     <section id="skills" className="relative w-full bg-black z-20 pt-32 pb-32">
       
+      {/* Noise Background Layer */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="max-w-7xl mx-auto px-6"
+        className="max-w-7xl mx-auto px-6 relative z-10"
       >
         
         {/* Brutalist Title */}
@@ -152,12 +160,27 @@ const BentoGrid = () => {
           {/* Card 2: Frontend */}
           <motion.div variants={itemVariants}>
             <SpotlightCard>
-              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}>
-                <Layout className="w-10 h-10 text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
-              </motion.div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Frontend</h3>
-                <p className="text-gray-400 text-sm">React, Next.js, Tailwind, Vue</p>
+              {/* Floating Icons Background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 group-hover:opacity-30 transition-opacity duration-500">
+                <motion.div animate={{ y: [-10, 10, -10], x: [-5, 5, -5], rotate: [0, 15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[15%]">
+                  <Component className="w-12 h-12 text-emerald-500" />
+                </motion.div>
+                <motion.div animate={{ y: [10, -10, 10], x: [5, -5, 5], rotate: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-[20%] right-[5%]">
+                  <Monitor className="w-10 h-10 text-cyan-500" />
+                </motion.div>
+                <motion.div animate={{ y: [-5, 5, -5], x: [10, -10, 10], rotate: [0, 20, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-[40%] right-[30%]">
+                  <Smartphone className="w-8 h-8 text-emerald-300" />
+                </motion.div>
+              </div>
+
+              <div className="relative z-10">
+                <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}>
+                  <Layout className="w-10 h-10 text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                </motion.div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Frontend</h3>
+                  <p className="text-gray-400 text-sm">React, Next.js, Tailwind, Vue</p>
+                </div>
               </div>
             </SpotlightCard>
           </motion.div>
@@ -165,12 +188,27 @@ const BentoGrid = () => {
           {/* Card 3: Backend */}
           <motion.div variants={itemVariants}>
             <SpotlightCard>
-              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}>
-                <Terminal className="w-10 h-10 text-blue-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
-              </motion.div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Backend</h3>
-                <p className="text-gray-400 text-sm">Node.js, PHP, Java, Kotlin</p>
+              {/* Floating Icons Background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 group-hover:opacity-30 transition-opacity duration-500">
+                <motion.div animate={{ y: [-10, 10, -10], x: [-5, 5, -5], rotate: [0, 10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[15%] right-[10%]">
+                  <Server className="w-12 h-12 text-blue-500" />
+                </motion.div>
+                <motion.div animate={{ y: [10, -10, 10], x: [5, -5, 5], rotate: [0, -15, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-[20%] right-[20%]">
+                  <Cpu className="w-10 h-10 text-purple-500" />
+                </motion.div>
+                <motion.div animate={{ y: [-5, 5, -5], x: [10, -10, 10], rotate: [0, 20, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-[50%] right-[5%]">
+                  <FileCode2 className="w-8 h-8 text-blue-300" />
+                </motion.div>
+              </div>
+
+              <div className="relative z-10">
+                <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}>
+                  <Terminal className="w-10 h-10 text-blue-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                </motion.div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Backend</h3>
+                  <p className="text-gray-400 text-sm">Node.js, PHP, Java, Kotlin</p>
+                </div>
               </div>
             </SpotlightCard>
           </motion.div>
@@ -205,12 +243,27 @@ const BentoGrid = () => {
           {/* Card 5: Databases */}
           <motion.div variants={itemVariants}>
             <SpotlightCard>
-              <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.1 }}>
-                <Database className="w-10 h-10 text-purple-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
-              </motion.div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Databases</h3>
-                <p className="text-gray-400 text-sm">MySQL, PostgreSQL, MongoDB</p>
+              {/* Floating Icons Background */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10 group-hover:opacity-30 transition-opacity duration-500">
+                <motion.div animate={{ y: [-8, 8, -8], x: [5, -5, 5], rotate: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[10%]">
+                  <HardDrive className="w-10 h-10 text-purple-500" />
+                </motion.div>
+                <motion.div animate={{ y: [10, -10, 10], x: [-5, 5, -5], rotate: [0, 15, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-[20%] right-[5%]">
+                  <Network className="w-8 h-8 text-fuchsia-400" />
+                </motion.div>
+                <motion.div animate={{ y: [-5, 5, -5], x: [10, -10, 10], rotate: [0, -20, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-[45%] right-[25%]">
+                  <Layers className="w-6 h-6 text-purple-300" />
+                </motion.div>
+              </div>
+
+              <div className="relative z-10">
+                <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 0.1 }}>
+                  <Database className="w-10 h-10 text-purple-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                </motion.div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">Databases</h3>
+                  <p className="text-gray-400 text-sm">MySQL, PostgreSQL, MongoDB</p>
+                </div>
               </div>
             </SpotlightCard>
           </motion.div>

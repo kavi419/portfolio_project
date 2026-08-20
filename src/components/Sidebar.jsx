@@ -73,15 +73,15 @@ const Sidebar = () => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="fixed left-4 md:left-8 top-[40%] -translate-y-[40%] z-[100] hidden md:flex flex-col"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
+        <div className="fixed left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100] hidden md:flex flex-col pointer-events-auto">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
           <motion.div
             animate={{
               width: isHovered ? 200 : 64,
@@ -94,10 +94,46 @@ const Sidebar = () => {
             {sections.filter(s => s.id !== 'hero').map((section) => {
               const isActive = activeSection === section.id;
               
+              const handleLinkClick = (e) => {
+                e.preventDefault();
+                if (window.lenis) {
+                  // Prevent App.jsx snapping from hijacking this scroll
+                  window.isSidebarScrolling = true;
+                  
+                  const target = document.getElementById(`wrapper-${section.id}`) || document.getElementById(section.id);
+                  if (target) {
+                    // Critical Fix: Lenis fails to calculate the correct scroll destination for 'sticky' elements 
+                    // because their getBoundingClientRect().top changes while stuck.
+                    // We must calculate the true absolute Y position from the document top using offsetTop.
+                    let absoluteY = 0;
+                    let el = target;
+                    while (el) {
+                      absoluteY += el.offsetTop;
+                      el = el.offsetParent;
+                    }
+
+                    window.lenis.scrollTo(absoluteY, { 
+                      duration: 1.2,
+                    });
+                    
+                    // Reset flag after animation completes
+                    setTimeout(() => {
+                      window.isSidebarScrolling = false;
+                    }, 1300);
+                  } else {
+                    window.isSidebarScrolling = false;
+                  }
+                } else {
+                  const el = document.getElementById(section.id);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }
+              };
+
               return (
                 <motion.a
                   key={section.id}
                   href={`#${section.id}`}
+                  onClick={handleLinkClick}
                   className="relative flex items-center h-14 px-5 cursor-pointer overflow-hidden group"
                   animate={{
                     color: currentStyles.color,
@@ -142,6 +178,7 @@ const Sidebar = () => {
             })}
           </motion.div>
         </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

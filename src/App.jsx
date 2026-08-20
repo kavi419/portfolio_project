@@ -33,6 +33,9 @@ const App = () => {
       touchMultiplier: 2,
       infinite: false,
     });
+    
+    // Export globally for components like Sidebar to use for imperative scrolling
+    window.lenis = lenis;
 
     let scrollTimeout;
     let lastScrollY = window.scrollY;
@@ -40,6 +43,9 @@ const App = () => {
     lenis.on('scroll', (e) => {
       clearTimeout(scrollTimeout);
       
+      // If the sidebar is currently scrolling, DO NOT trigger the snap logic!
+      if (window.isSidebarScrolling) return;
+
       scrollTimeout = setTimeout(() => {
         const currentScrollY = window.scrollY;
         const scrollDirection = currentScrollY > lastScrollY ? 1 : -1;

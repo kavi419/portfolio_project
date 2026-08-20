@@ -59,6 +59,7 @@ export const certificatesData = [
 const Certificates = () => {
   const ref = useRef(null);
   const [selectedCert, setSelectedCert] = useState(null);
+  const [hoveredId, setHoveredId] = useState(null);
   
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -100,35 +101,69 @@ const Certificates = () => {
         viewport={{ once: true, amount: 0.2 }}
         className="relative z-10 w-full"
       >
-        <motion.div variants={itemVariants} className="mb-16 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 text-white">Certifications.</h2>
+        <motion.div variants={itemVariants} className="mb-16 text-center relative z-10">
+          <h2 className="text-[10vw] md:text-[7vw] lg:text-[6vw] font-black uppercase leading-none text-white tracking-widest md:tracking-[0.1em] mb-4" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
+            CERTIFICATIONS
+          </h2>
           <p className="text-gray-400">Professional milestones and specialized training paths.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {certificatesData.map((cert) => (
-            <motion.div 
-              key={cert.id}
-              variants={itemVariants}
-              whileHover={{ y: -10 }}
-              onClick={() => setSelectedCert(cert)}
-              className="glass p-8 rounded-3xl flex flex-col items-center justify-center text-center relative z-10 shadow-lg overflow-hidden group border border-white/10 cursor-pointer transition-all duration-300 hover:border-white/30"
-            >
-              <div className={`absolute inset-0 bg-gradient-to-t ${cert.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <div className="bg-white/5 p-4 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-500">
-                <Award className={`${cert.iconColor} drop-shadow-md`} size={48} />
-              </div>
-              
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-white transition-colors">{cert.title}</h3>
-              <p className="text-sm text-gray-400 mb-4">{cert.issuer} &bull; {cert.date}</p>
-              
-              <div className="flex items-center gap-2 text-xs font-semibold text-gray-300 uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">
-                <span>View</span>
-                <ExternalLink size={14} />
-              </div>
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+          {certificatesData.map((cert, index) => {
+            const [isHovered, setIsHovered] = useState(false);
+            const mouseX = useRef(0);
+            const mouseY = useRef(0);
+            
+            const handleMouseMove = (e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              mouseX.current = e.clientX - rect.left;
+              mouseY.current = e.clientY - rect.top;
+              // Just trigger a re-render for the shine effect
+              setIsHovered(true);
+            };
+
+            return (
+              <motion.div 
+                key={cert.id}
+                variants={itemVariants}
+                // 4. Continuous Floating/Levitation
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.4 }}
+                className="relative"
+              >
+                <div
+                  onMouseEnter={() => { setHoveredId(cert.id); setIsHovered(true); }}
+                  onMouseLeave={() => { setHoveredId(null); setIsHovered(false); }}
+                  onMouseMove={handleMouseMove}
+                  onClick={() => setSelectedCert(cert)}
+                  // 2. Focus Mode (Dim Others)
+                  style={{ opacity: hoveredId && hoveredId !== cert.id ? 0.3 : 1 }}
+                  className={`glass p-8 rounded-3xl flex flex-col items-center justify-center text-center relative z-10 shadow-lg overflow-hidden group border border-white/10 cursor-pointer transition-all duration-500 hover:scale-105 hover:!bg-white hover:border-white focus-card-${cert.id}`}
+                >
+                  {/* 1. Holographic "Trading Card" Shine */}
+                  <div 
+                    className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 mix-blend-overlay"
+                    style={{
+                      background: isHovered ? `radial-gradient(400px circle at ${mouseX.current}px ${mouseY.current}px, rgba(255,255,255,0.8), transparent 40%)` : 'none',
+                    }}
+                  />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 z-0 bg-gradient-to-tr from-transparent via-white to-transparent translate-x-[-100%] group-hover:animate-shine" />
+                  
+                  <div className="bg-white/5 group-hover:bg-black/5 p-4 rounded-2xl mb-6 group-hover:scale-110 transition-all duration-500 relative z-10">
+                    <Award className={`${cert.iconColor} drop-shadow-md group-hover:!text-black transition-colors duration-500`} size={48} />
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-black transition-colors duration-500 relative z-10">{cert.title}</h3>
+                  <p className="text-sm text-gray-400 mb-4 group-hover:text-gray-600 transition-colors duration-500 relative z-10">{cert.issuer} &bull; {cert.date}</p>
+                  
+                  <div className="flex items-center gap-2 text-xs font-semibold text-gray-300 uppercase tracking-widest opacity-60 group-hover:opacity-100 group-hover:text-black transition-all duration-500 relative z-10">
+                    <span>View</span>
+                    <ExternalLink size={14} />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
 

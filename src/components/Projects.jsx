@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 
 const projectsData = [
@@ -8,14 +8,14 @@ const projectsData = [
     description: "A full-stack e-commerce web application for an online meat store with inventory management, real-time cart, and staff dashboard.",
     tech: ["PHP", "MySQL", "JavaScript"],
     tag: "Full-Stack",
-    github: "#"
+    github: "https://github.com/kavi419/meat-mart-ecommerce"
   },
   {
     title: "Cosmos SL",
     description: "Modern digital platform built for scale. Hosted on Vercel with high performance.",
     tech: ["JavaScript", "Vercel", "Web"],
     tag: "Frontend",
-    github: "#",
+    github: "https://github.com/kavi419/cosmos-sl",
     link: "https://cosmos-sl.vercel.app/"
   },
   {
@@ -23,7 +23,7 @@ const projectsData = [
     description: "Security-focused application emphasizing robust web architecture and clean UI.",
     tech: ["JavaScript", "Security"],
     tag: "Frontend",
-    github: "#",
+    github: "https://github.com/kavi419/cyber-guard-sl",
     link: "https://cyber-guard-sl.vercel.app/"
   },
   {
@@ -31,7 +31,7 @@ const projectsData = [
     description: "Healthcare discovery platform linking patients with medical resources in Sri Lanka.",
     tech: ["React", "Node.js", "MongoDB"],
     tag: "Web App",
-    github: "#",
+    github: "https://github.com/kavi419/medifind-lk",
     link: "https://medifind-lk.vercel.app/"
   },
   {
@@ -39,14 +39,14 @@ const projectsData = [
     description: "A Java-based system for managing blood donation campaigns and donor records efficiently.",
     tech: ["Java", "OOP", "MySQL"],
     tag: "Desktop/Core",
-    github: "#"
+    github: "https://github.com/kavi419/lifeline-blood-link"
   },
   {
     title: "Fixit SL",
     description: "Utility application for quick service requests and issue tracking.",
     tech: ["JavaScript", "CSS"],
     tag: "Frontend",
-    github: "#",
+    github: "https://github.com/kavi419/Fixit-sl",
     link: "https://fixit-sl.vercel.app/"
   }
 ];
@@ -66,25 +66,128 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
 };
 
+// 3. Magnetic Button Component
+const MagneticButton = ({ children, href, className }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
+  const springX = useSpring(x, springConfig);
+  const springY = useSpring(y, springConfig);
+
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    x.set((e.clientX - cx) * 0.4); 
+    y.set((e.clientY - cy) * 0.4);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.a 
+      ref={ref}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: springX, y: springY }}
+      className={className}
+    >
+      {children}
+    </motion.a>
+  );
+};
+
 const ProjectCard = ({ project }) => {
+  // 1. 3D Tilt Logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-100, 100], [5, -5]); 
+  const rotateY = useTransform(x, [-100, 100], [-5, 5]);
+
+  // 4. Color Reveal (Spotlight) Logic
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    
+    // Tilt calculation (relative to center)
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set(event.clientX - centerX);
+    y.set(event.clientY - centerY);
+
+    // Spotlight calculation (relative to top-left)
+    mouseX.set(event.clientX - rect.left);
+    mouseY.set(event.clientY - rect.top);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
     <motion.div
       variants={itemVariants}
-      className="group relative flex flex-col justify-between p-8 md:p-10 bg-white border border-gray-200 rounded-3xl hover:bg-black transition-colors duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      className="group relative flex flex-col justify-between p-8 md:p-10 bg-white border border-gray-200 rounded-3xl hover:bg-[#050505] transition-colors duration-500 cursor-pointer shadow-sm hover:shadow-2xl"
     >
+      {/* Dynamic Emerald Spotlight Reveal */}
+      <motion.div 
+        className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 rounded-3xl"
+        style={{
+          background: useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(16, 185, 129, 0.15), transparent 80%)`
+        }}
+      />
+
       {/* Top Section */}
-      <div className="flex justify-between items-start mb-16">
-        <span className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest border border-gray-900 text-gray-900 rounded-full group-hover:border-white group-hover:text-white transition-colors duration-500">
+      <div className="relative z-10 flex justify-between items-start mb-16" style={{ transform: "translateZ(30px)" }}>
+        <span className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest border border-gray-900 text-gray-900 rounded-full group-hover:border-white/20 group-hover:bg-white/10 group-hover:text-white transition-colors duration-500">
           {project.tag}
         </span>
         <div className="flex gap-4">
           {project.github && (
-            <a href={project.github} target="_blank" rel="noreferrer" className="text-gray-400 hover:!text-emerald-500 group-hover:text-white transition-all duration-500 group-hover:-translate-y-1">
+            <a 
+              href={project.github} 
+              target={project.github === '#' ? '_self' : '_blank'} 
+              rel="noreferrer" 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (project.github === '#') {
+                  e.preventDefault();
+                  alert("GitHub repository link coming soon!");
+                }
+              }}
+              className="text-gray-400 hover:!text-emerald-500 group-hover:text-gray-300 transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-110"
+            >
               <Github size={24} />
             </a>
           )}
           {project.link && (
-            <a href={project.link} target="_blank" rel="noreferrer" className="text-gray-400 hover:!text-emerald-500 group-hover:text-white transition-all duration-500 group-hover:-translate-y-1">
+            <a 
+              href={project.link} 
+              target={project.link === '#' ? '_self' : '_blank'} 
+              rel="noreferrer" 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (project.link === '#') {
+                  e.preventDefault();
+                }
+              }}
+              className="text-gray-400 hover:!text-emerald-500 group-hover:text-gray-300 transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-110"
+            >
               <ExternalLink size={24} />
             </a>
           )}
@@ -92,7 +195,7 @@ const ProjectCard = ({ project }) => {
       </div>
 
       {/* Middle Section */}
-      <div>
+      <div className="relative z-10" style={{ transform: "translateZ(40px)" }}>
         <h3 className="text-3xl md:text-4xl font-black text-black group-hover:text-white tracking-tight mb-6 transition-colors duration-500">
           {project.title}
         </h3>
@@ -101,12 +204,13 @@ const ProjectCard = ({ project }) => {
         </p>
       </div>
 
-      {/* Bottom Section (Tech Stack) */}
-      <div className="mt-12 flex flex-wrap gap-2">
+      {/* Bottom Section (Tech Stack with Staggered Jump) */}
+      <div className="relative z-10 mt-12 flex flex-wrap gap-2" style={{ transform: "translateZ(20px)" }}>
         {project.tech.map((tech, i) => (
           <span 
             key={i} 
-            className="text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1 bg-gray-100 text-gray-600 group-hover:bg-white/10 group-hover:text-gray-300 rounded transition-colors duration-500"
+            className="text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1 bg-gray-100 text-gray-600 group-hover:bg-emerald-500/10 group-hover:text-emerald-400 rounded transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_10px_20px_rgba(16,185,129,0.2)]"
+            style={{ transitionDelay: `${i * 75}ms` }}
           >
             {tech}
           </span>
@@ -118,7 +222,7 @@ const ProjectCard = ({ project }) => {
 
 const Projects = () => {
   return (
-    <section id="projects" className="relative w-full bg-white z-20 pt-32 pb-32">
+    <section id="projects" className="relative w-full bg-white z-20 pt-16 pb-32" style={{ perspective: "1000px" }}>
       
       <motion.div 
         variants={containerVariants}
@@ -129,7 +233,7 @@ const Projects = () => {
       >
         
         {/* Brutalist Title */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
           <motion.div variants={itemVariants}>
             <h2 className="text-[10vw] md:text-[7vw] lg:text-[6vw] font-black uppercase leading-none text-black tracking-widest md:tracking-[0.1em] ml-2" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
               FEATURED WORK
@@ -139,16 +243,15 @@ const Projects = () => {
             </p>
           </motion.div>
           
-          <motion.a 
-            variants={itemVariants}
-            href="https://github.com/kavi419" 
-            target="_blank" 
-            rel="noreferrer"
-            className="mt-8 md:mt-0 group flex items-center gap-2 text-black font-bold tracking-widest uppercase hover:text-emerald-500 transition-colors"
-          >
-            View GitHub 
-            <ExternalLink size={20} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-          </motion.a>
+          <motion.div variants={itemVariants}>
+            <MagneticButton 
+              href="https://github.com/kavi419" 
+              className="mt-8 md:mt-0 flex items-center justify-center gap-2 bg-gray-100 hover:bg-black hover:text-emerald-400 text-black font-bold tracking-widest uppercase px-6 py-4 rounded-full transition-colors duration-300 shadow-sm"
+            >
+              View GitHub 
+              <ExternalLink size={20} />
+            </MagneticButton>
+          </motion.div>
         </div>
 
         {/* Project Grid */}
