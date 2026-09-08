@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, animate, useMotionValue, useTransform } from 'framer-motion';
 import { certificatesData } from './Certificates';
-import { Github, Linkedin, Mail, Code, Database, Terminal, Cpu, ChevronDown } from 'lucide-react';
+import { Github, Linkedin, Mail, Code, Database, Terminal, Cpu, ChevronDown, FileText } from 'lucide-react';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -166,7 +166,7 @@ const WhoIAm = () => {
   return (
     <section 
       id="whoiam" 
-      className="relative w-full bg-white z-10 h-screen overflow-hidden"
+      className="relative w-full bg-white z-10 min-h-screen md:h-screen md:overflow-hidden flex flex-col md:block pt-16 md:pt-0 pb-16 md:pb-0"
       onMouseMove={handleMouseMove}
     >
       
@@ -191,33 +191,53 @@ const WhoIAm = () => {
         </motion.div>
       </div>
 
-      {/* 0. MAGNETIC SOCIAL SIDEBAR (Top Left) */}
-      <div className="absolute top-6 md:top-8 left-4 sm:left-10 md:left-16 lg:left-24 flex flex-row gap-3 md:gap-4 z-40 pointer-events-auto">
-        <MagneticIcon href="https://github.com"><Github size={20} /></MagneticIcon>
-        <MagneticIcon href="https://linkedin.com"><Linkedin size={20} /></MagneticIcon>
-        <MagneticIcon href="mailto:contact@kavindu.com"><Mail size={20} /></MagneticIcon>
-      </div>
-
       {/* 1. TOP: Brutalist Title */}
       <motion.div 
         initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={itemVariants}
-        className="absolute top-6 md:top-8 left-0 w-full flex justify-center text-center z-20 pointer-events-none"
+        className="relative md:absolute md:top-6 lg:top-8 left-0 w-full flex justify-center text-center z-20 pointer-events-none order-1 md:order-none"
       >
-        <h2 className="text-[10vw] md:text-[6vw] lg:text-[5vw] font-black uppercase leading-none text-black tracking-widest md:tracking-[0.1em]" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
+        <h2 className="text-[12vw] md:text-[6vw] lg:text-[5vw] font-black uppercase leading-none text-black tracking-widest md:tracking-[0.1em]" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
           WHO I AM
         </h2>
       </motion.div>
 
+      {/* MOBILE ONLY: Action Bar (Socials + Resume) */}
+      <div className="md:hidden flex flex-row items-center justify-between w-full px-6 mt-8 z-40 pointer-events-auto order-2">
+        <div className="flex flex-row gap-3">
+          <MagneticIcon href="https://github.com"><Github size={18} /></MagneticIcon>
+          <MagneticIcon href="https://linkedin.com"><Linkedin size={18} /></MagneticIcon>
+          <MagneticIcon href="mailto:contact@kavindu.com"><Mail size={18} /></MagneticIcon>
+        </div>
+        <a href="/Kavindu_CV.pdf" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-3 bg-black text-white rounded-full font-bold text-[10px] tracking-widest uppercase hover:bg-emerald-500 hover:text-black transition-colors shadow-lg">
+          <span>Resume</span>
+          <FileText size={14} />
+        </a>
+      </div>
+
+      {/* DESKTOP ONLY: Social Sidebar & Resume Button */}
+      <div className="hidden md:flex absolute top-8 left-16 lg:left-24 flex-row gap-4 z-40 pointer-events-auto">
+        <MagneticIcon href="https://github.com"><Github size={20} /></MagneticIcon>
+        <MagneticIcon href="https://linkedin.com"><Linkedin size={20} /></MagneticIcon>
+        <MagneticIcon href="mailto:contact@kavindu.com"><Mail size={20} /></MagneticIcon>
+      </div>
+      
+      <div className="hidden md:block absolute top-8 right-16 lg:right-24 z-40 pointer-events-auto">
+        <a href="/Kavindu_CV.pdf" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-4 bg-black text-white rounded-full font-bold text-xs tracking-widest uppercase hover:bg-emerald-500 hover:text-black transition-colors duration-300 shadow-lg hover:shadow-xl group">
+          <span>View Resume</span>
+          <FileText size={16} className="group-hover:rotate-12 transition-transform" />
+        </a>
+      </div>
+
       {/* 2. CENTER: Big name text */}
-      <div className="absolute top-[32%] md:top-[34%] -translate-y-1/2 left-0 w-full flex flex-row items-center justify-center gap-1 md:gap-3 text-center z-10 pointer-events-none">
+      <div className="relative md:absolute mt-10 md:mt-0 md:top-[34%] md:-translate-y-1/2 left-0 w-full flex flex-col md:flex-row items-center justify-center gap-1 md:gap-3 text-center z-10 pointer-events-none order-3 md:order-none px-4">
          <h1 
-            className="text-[7vw] sm:text-[6.5vw] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[8rem] font-black uppercase leading-none text-transparent select-none whitespace-nowrap" 
+            className="text-[14vw] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[8rem] font-black uppercase leading-none text-transparent select-none whitespace-nowrap" 
             style={{ WebkitTextStroke: '2px black', fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}
          >
            KAVINDU
          </h1>
          <h1 
-            className="text-[7vw] sm:text-[6.5vw] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[8rem] font-black uppercase leading-none text-black select-none whitespace-nowrap" 
+            className="text-[14vw] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[8rem] font-black uppercase leading-none text-black select-none whitespace-nowrap" 
             style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}
          >
            AMARASOORIYA
@@ -227,7 +247,7 @@ const WhoIAm = () => {
       {/* 2.5. LEFT: Bio Paragraph & Signature */}
       <motion.div 
         initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={itemVariants}
-        className="absolute top-[55%] -translate-y-1/2 left-4 sm:left-10 md:left-24 lg:left-32 xl:left-40 w-[300px] sm:w-[340px] md:w-[380px] z-30 pointer-events-auto"
+        className="relative md:absolute mt-8 md:mt-0 md:top-[55%] md:-translate-y-1/2 md:left-16 lg:left-32 xl:left-40 w-full md:w-[380px] px-8 md:px-0 flex flex-col items-center md:items-start text-center md:text-left z-30 pointer-events-auto order-4 md:order-none"
       >
         <p className="text-gray-900 text-xl md:text-2xl leading-[1.5] font-light mb-4 drop-shadow-sm">
           I am a passionate <span className="font-semibold text-black">Full Stack Developer</span> and third-year IT undergraduate at SLIIT.
@@ -257,7 +277,7 @@ const WhoIAm = () => {
       <motion.div 
         variants={statsContainerVariants}
         initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}
-        className="absolute bottom-6 md:bottom-10 right-4 sm:right-10 md:right-16 lg:right-24 xl:right-32 flex flex-col gap-4 md:gap-6 z-30 pointer-events-auto"
+        className="relative md:absolute mt-16 md:mt-0 md:bottom-10 md:right-16 lg:right-24 xl:right-32 grid grid-cols-2 gap-y-10 gap-x-6 md:flex md:flex-col md:gap-6 z-30 pointer-events-auto order-5 md:order-none px-6 w-full md:w-auto"
       >
         <StatItem endCount={10} subtitle="Projects Completed" />
         <StatItem endCount={Math.max(0, certificatesData.length - 1)} subtitle="Certificates Earned" />
@@ -266,7 +286,7 @@ const WhoIAm = () => {
       </motion.div>
 
       {/* 3. BOTTOM: Interactive Photo Wrapper */}
-      <div className="absolute bottom-4 md:bottom-8 left-0 w-full flex justify-center z-20 pointer-events-none">
+      <div className="relative md:absolute mt-16 md:mt-0 md:bottom-8 left-0 w-full flex justify-center z-20 pointer-events-none order-6 md:order-none px-4">
         <InteractivePhoto />
       </div>
 

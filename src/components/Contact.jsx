@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, ArrowRight, ArrowUp, Copy, Check } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowRight, ArrowUp, Copy, Check, Download } from 'lucide-react';
 
 const containerVariants = {
   hidden: {},
@@ -120,10 +120,10 @@ const Contact = () => {
             variants={itemVariants}
             className="flex flex-col justify-center"
           >
-            <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter mb-6 leading-tight">
+            <h2 className="text-[11vw] sm:text-5xl md:text-7xl font-black text-black tracking-tighter mb-6 leading-tight">
               Let's build <br />
               something <br />
-              <span className="inline-block bg-black text-white px-4 py-2 mt-2 rounded-xl rotate-[-2deg]">extraordinary.</span>
+              <span className="inline-block bg-black text-white px-3 sm:px-4 py-1.5 sm:py-2 mt-2 rounded-xl rotate-[-2deg]">extraordinary.</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8 max-w-md leading-relaxed">
               I'm currently available for freelance work and full-time roles. If you have a project that needs some creative magic or just want to say hi, feel free to reach out.
@@ -164,6 +164,16 @@ const Contact = () => {
                     {copied ? <Check size={18} className="text-emerald-400" /> : <Copy size={18} />}
                   </div>
                 </div>
+
+                {/* Download Resume Button */}
+                <a 
+                  href="/Kavindu_CV.pdf" 
+                  download="Kavindu_Nethmina_CV.pdf"
+                  className="flex items-center gap-3 h-14 border border-gray-200 rounded-full px-6 bg-white hover:border-black hover:bg-black hover:text-emerald-400 text-black cursor-pointer transition-all duration-300 group shadow-sm hover:shadow-md shrink-0"
+                >
+                  <span className="text-xs font-bold tracking-widest uppercase">Download Resume</span>
+                  <Download size={18} className="group-hover:-translate-y-1 transition-transform" />
+                </a>
               </div>
             </div>
           </motion.div>
