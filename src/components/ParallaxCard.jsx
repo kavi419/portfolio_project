@@ -44,7 +44,7 @@ const ParallaxCard = ({ children, zIndex, bgClass = "bg-white", id }) => {
     >
       <motion.div 
         style={{ scale, opacity }} 
-        className={`w-full flex-1 origin-top shadow-[0_-30px_60px_rgba(0,0,0,0.6)] overflow-hidden ${bgClass}`}
+        className={`w-full flex-1 origin-top shadow-[0_-30px_60px_rgba(0,0,0,0.6)] ${bgClass}`}
       >
         {children}
       </motion.div>

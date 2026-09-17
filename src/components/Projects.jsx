@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink } from 'lucide-react';
 
-const projectsData = [
+const webProjectsData = [
   {
     title: "Meat Mart E-Commerce",
     description: "A full-stack e-commerce web application for an online meat store with inventory management, real-time cart, and staff dashboard.",
@@ -38,7 +38,7 @@ const projectsData = [
     title: "Lifeline Blood Link",
     description: "A Java-based system for managing blood donation campaigns and donor records efficiently.",
     tech: ["Java", "OOP", "MySQL"],
-    tag: "Desktop/Core",
+    tag: "Desktop",
     github: "https://github.com/kavi419/lifeline-blood-link"
   },
   {
@@ -48,220 +48,301 @@ const projectsData = [
     tag: "Frontend",
     github: "https://github.com/kavi419/Fixit-sl",
     link: "https://fixit-sl.vercel.app/"
+  },
+  {
+    title: "Verity Project",
+    description: "A comprehensive web-based platform with advanced digital features and scalable architecture.",
+    tech: ["JavaScript", "React", "Node.js"],
+    tag: "Web App",
+    github: "https://github.com/SSMShehan/Verity-Project.git"
+  },
+  {
+    title: "Smart Campus Hub",
+    description: "An integrated university management platform designed to streamline student activities and campus administration.",
+    tech: ["React", "Express", "MongoDB"],
+    tag: "Full-Stack",
+    github: "https://github.com/kavi419/smart-campus-hub.git"
+  },
+  {
+    title: "SerendibGo v2",
+    description: "A modern tourism and travel web application showcasing the beauty of Sri Lanka with interactive booking systems.",
+    tech: ["Next.js", "TailwindCSS", "PostgreSQL"],
+    tag: "Web App",
+    github: "https://github.com/Blitz2001/serendibgo_v2.git"
+  },
+  {
+    title: "Charisma AI",
+    description: "An intelligent AI-powered conversational agent and virtual assistant platform built for seamless human-computer interaction.",
+    tech: ["React", "Python", "OpenAI"],
+    tag: "AI / Web",
+    github: "https://github.com/kavi419/CharismaAi.git"
   }
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.4
-    }
+const mobileProjectsData = [
+  {
+    title: "Wellness Tracker",
+    description: "A feature-rich Android app designed to help users track daily habits, hydration, and emotional well-being with health scores.",
+    tech: ["Kotlin", "Android SDK", "Material 3"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/Wellness-Tracker.git"
+  },
+  {
+    title: "MySmartPOS",
+    description: "Point of Sale & Inventory Management Android application for retail businesses with real-time billing and stock control.",
+    tech: ["Kotlin", "Compose", "Firebase"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/MySmartPOS.git"
+  },
+  {
+    title: "Viraj Cash App",
+    description: "Secure cash management and expense tracking mobile application for daily personal and business financial monitoring.",
+    tech: ["Kotlin", "Android", "Finance"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/Viraj-Cash-App.git"
+  },
+  {
+    title: "MyHelth App",
+    description: "Comprehensive personal health ecosystem designed to build healthy lifestyle habits with nutrition and fitness tracking.",
+    tech: ["Kotlin", "Android SDK", "Health Tech"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/MyHelth_App.git"
+  },
+  {
+    title: "NexBus",
+    description: "Smart commuting app featuring real-time bus tracking, route planning, and live schedules for stress-free transport.",
+    tech: ["Kotlin", "Google Maps", "API"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/NexBus.git"
+  },
+  {
+    title: "Pet Mate App",
+    description: "All-in-one pet care and marketplace Android application connecting pet owners with health tracking and supplies.",
+    tech: ["Kotlin", "Android SDK", "Marketplace"],
+    tag: "Mobile App",
+    github: "https://github.com/kavi419/Pet_Mate-App.git"
   }
-};
+];
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-};
-
-// 3. Magnetic Button Component
-const MagneticButton = ({ children, href, className }) => {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+const ProjectCard = ({ project, index, activeCategory }) => {
+  const isWeb = activeCategory === 'web';
   
-  const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
-  const springX = useSpring(x, springConfig);
-  const springY = useSpring(y, springConfig);
-
-  const handleMouseMove = (e) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * 0.4); 
-    y.set((e.clientY - cy) * 0.4);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.a 
-      ref={ref}
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
-      className={className}
-    >
-      {children}
-    </motion.a>
-  );
-};
-
-const ProjectCard = ({ project }) => {
-  // 1. 3D Tilt Logic
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-100, 100], [5, -5]); 
-  const rotateY = useTransform(x, [-100, 100], [-5, 5]);
-
-  // 4. Color Reveal (Spotlight) Logic
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMouseMove = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
+  const badgeHover = isWeb 
+    ? 'group-hover:border-emerald-500/50 group-hover:text-emerald-600 group-hover:bg-emerald-500/10' 
+    : 'group-hover:border-purple-500/50 group-hover:text-purple-600 group-hover:bg-purple-500/10';
     
-    // Tilt calculation (relative to center)
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(event.clientX - centerX);
-    y.set(event.clientY - centerY);
-
-    // Spotlight calculation (relative to top-left)
-    mouseX.set(event.clientX - rect.left);
-    mouseY.set(event.clientY - rect.top);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const titleHover = isWeb ? 'group-hover:text-emerald-600' : 'group-hover:text-purple-600';
+  
+  const techHover = isWeb 
+    ? 'group-hover:bg-emerald-500/10 group-hover:text-emerald-700' 
+    : 'group-hover:bg-purple-500/10 group-hover:text-purple-700';
+    
+  const iconHover = isWeb ? 'hover:text-emerald-600' : 'hover:text-purple-600';
+  
+  const numberHover = isWeb ? 'group-hover:text-emerald-500/20' : 'group-hover:text-purple-500/20';
 
   return (
-    <motion.div
-      variants={itemVariants}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="group relative flex flex-col justify-between p-8 md:p-10 bg-white border border-gray-200 rounded-3xl hover:bg-[#050505] transition-colors duration-500 cursor-pointer shadow-sm hover:shadow-2xl"
-    >
-      {/* Dynamic Emerald Spotlight Reveal */}
-      <motion.div 
-        className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 rounded-3xl"
-        style={{
-          background: useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(16, 185, 129, 0.15), transparent 80%)`
-        }}
-      />
+    <div className="group relative w-[85vw] sm:w-[400px] h-[500px] flex-shrink-0 flex flex-col justify-between p-8 rounded-3xl bg-black/5 backdrop-blur-xl border border-black/10 hover:border-black/20 transition-all duration-500 hover:-translate-y-4 hover:bg-black/10 cursor-pointer shadow-sm hover:shadow-xl">
+      
+      {/* Index Number */}
+      <div className={`absolute -top-6 -right-4 md:-right-8 text-[120px] leading-none font-black text-black/5 transition-all duration-500 select-none pointer-events-none z-0 group-hover:-translate-y-6 group-hover:scale-110 ${numberHover}`}>
+        {String(index + 1).padStart(2, '0')}
+      </div>
 
       {/* Top Section */}
-      <div className="relative z-10 flex justify-between items-start mb-16" style={{ transform: "translateZ(30px)" }}>
-        <span className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest border border-gray-900 text-gray-900 rounded-full group-hover:border-white/20 group-hover:bg-white/10 group-hover:text-white transition-colors duration-500">
+      <div className="relative z-10">
+        <span className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] border border-black/20 text-black/70 rounded-full transition-colors duration-500 ${badgeHover}`}>
           {project.tag}
         </span>
-        <div className="flex gap-4">
+        <h3 className={`text-2xl font-black text-black mt-8 tracking-tight transition-colors duration-500 ${titleHover}`}>
+          {project.title}
+        </h3>
+        <p className="text-black/60 mt-4 text-sm leading-relaxed group-hover:text-black/90 transition-colors duration-500 line-clamp-4">
+          {project.description}
+        </p>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="relative z-10 flex flex-col gap-6">
+        <div className="flex flex-wrap gap-2">
+          {project.tech.map((tech, i) => (
+            <span 
+              key={i} 
+              className={`text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 bg-black/5 text-black/80 rounded transition-all duration-500 translate-y-0 group-hover:-translate-y-1 ${techHover}`}
+              style={{ transitionDelay: `${i * 50}ms` }}
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4 pt-4 border-t border-black/10 group-hover:border-black/20 transition-colors duration-500">
           {project.github && (
             <a 
               href={project.github} 
-              target={project.github === '#' ? '_self' : '_blank'} 
+              target="_blank" 
               rel="noreferrer" 
-              onClick={(e) => {
-                e.stopPropagation();
-                if (project.github === '#') {
-                  e.preventDefault();
-                  alert("GitHub repository link coming soon!");
-                }
-              }}
-              className="text-gray-400 hover:!text-emerald-500 group-hover:text-gray-300 transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-110"
+              className={`p-2 bg-black/5 rounded-full text-black/50 hover:bg-black/10 hover:scale-110 transition-all duration-300 ${iconHover}`}
             >
-              <Github size={24} />
+              <Github size={20} />
             </a>
           )}
           {project.link && (
             <a 
               href={project.link} 
-              target={project.link === '#' ? '_self' : '_blank'} 
+              target="_blank" 
               rel="noreferrer" 
-              onClick={(e) => {
-                e.stopPropagation();
-                if (project.link === '#') {
-                  e.preventDefault();
-                }
-              }}
-              className="text-gray-400 hover:!text-emerald-500 group-hover:text-gray-300 transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-110"
+              className={`p-2 bg-black/5 rounded-full text-black/50 hover:bg-black/10 hover:scale-110 transition-all duration-300 ${iconHover}`}
             >
-              <ExternalLink size={24} />
+              <ExternalLink size={20} />
             </a>
           )}
         </div>
       </div>
-
-      {/* Middle Section */}
-      <div className="relative z-10" style={{ transform: "translateZ(40px)" }}>
-        <h3 className="text-3xl md:text-4xl font-black text-black group-hover:text-white tracking-tight mb-6 transition-colors duration-500">
-          {project.title}
-        </h3>
-        <p className="text-gray-600 group-hover:text-gray-400 text-sm md:text-base leading-relaxed transition-colors duration-500 max-w-sm">
-          {project.description}
-        </p>
-      </div>
-
-      {/* Bottom Section (Tech Stack with Staggered Jump) */}
-      <div className="relative z-10 mt-12 flex flex-wrap gap-2" style={{ transform: "translateZ(20px)" }}>
-        {project.tech.map((tech, i) => (
-          <span 
-            key={i} 
-            className="text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1 bg-gray-100 text-gray-600 group-hover:bg-emerald-500/10 group-hover:text-emerald-400 rounded transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_10px_20px_rgba(16,185,129,0.2)]"
-            style={{ transitionDelay: `${i * 75}ms` }}
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
-    </motion.div>
+    </div>
   );
 };
 
 const Projects = () => {
+  const [activeCategory, setActiveCategory] = useState('web');
+  const targetRef = useRef(null);
+  const activeProjects = activeCategory === 'web' ? webProjectsData : mobileProjectsData;
+
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+  });
+
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
+
   return (
-    <section id="projects" className="relative w-full bg-white z-20 pt-16 pb-32" style={{ perspective: "1000px" }}>
+    <section ref={targetRef} className="relative z-30 h-[400vh] bg-white">
       
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        className="max-w-7xl mx-auto px-6"
-      >
+      {/* Sticky view that pins to the screen */}
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden border-t border-black/5">
         
-        {/* Brutalist Title */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
-          <motion.div variants={itemVariants}>
-            <h2 className="text-[10vw] md:text-[7vw] lg:text-[6vw] font-black uppercase leading-none text-black tracking-widest md:tracking-[0.1em] ml-2" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
+        {/* Dynamic Background Glow for White Theme */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] opacity-15 pointer-events-none transition-colors duration-1000 ${activeCategory === 'web' ? 'bg-emerald-300' : 'bg-purple-300'}`} />
+
+        <motion.div 
+          initial={{ opacity: 0, y: -50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="absolute top-12 md:top-16 left-0 w-full px-6 flex flex-col md:flex-row items-center justify-between gap-6 z-20 max-w-7xl mx-auto right-0"
+        >
+          <div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-none text-black tracking-widest md:tracking-[0.08em]" style={{ fontFamily: "'Impact', 'Oswald', 'Arial Black', sans-serif" }}>
               FEATURED WORK
             </h2>
-            <p className="text-gray-500 text-sm md:text-lg max-w-2xl mt-6 font-mono">
-              A curated selection of my software projects.
+            <p className="text-black/50 text-xs md:text-sm max-w-xl mt-2 font-mono">
+              Scroll down to explore horizontally
             </p>
-          </motion.div>
-          
-          <motion.div variants={itemVariants}>
-            <MagneticButton 
-              href="https://github.com/kavi419" 
-              className="mt-8 md:mt-0 flex items-center justify-center gap-2 bg-gray-100 hover:bg-black hover:text-emerald-400 text-black font-bold tracking-widest uppercase px-6 py-4 rounded-full transition-colors duration-300 shadow-sm"
-            >
-              View GitHub 
-              <ExternalLink size={20} />
-            </MagneticButton>
-          </motion.div>
-        </div>
+          </div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projectsData.map((project, index) => (
-            <ProjectCard key={index} project={project} />
-          ))}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            {/* Switcher Pill */}
+            <div className="flex bg-black/5 p-1.5 rounded-full backdrop-blur-md border border-black/10">
+              <button
+                onClick={() => setActiveCategory('web')}
+                className={`relative px-6 py-2.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                  activeCategory === 'web' ? 'text-white' : 'text-black/60 hover:text-black'
+                }`}
+              >
+                {activeCategory === 'web' && (
+                  <motion.div
+                    layoutId="activeCategory"
+                    className="absolute inset-0 bg-emerald-500 rounded-full"
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  />
+                )}
+                <span className="relative z-10">Web Ecosystem</span>
+              </button>
+              <button
+                onClick={() => setActiveCategory('mobile')}
+                className={`relative px-6 py-2.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                  activeCategory === 'mobile' ? 'text-white' : 'text-black/60 hover:text-black'
+                }`}
+              >
+                {activeCategory === 'mobile' && (
+                  <motion.div
+                    layoutId="activeCategory"
+                    className="absolute inset-0 bg-purple-500 rounded-full"
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  />
+                )}
+                <span className="relative z-10">Mobile Apps</span>
+              </button>
+            </div>
+
+            {/* GitHub Header Button */}
+            <a 
+              href="https://github.com/kavi419" 
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-black/10 bg-black/5 hover:bg-black/10 text-xs font-bold uppercase tracking-widest text-black/70 hover:text-black transition-all shadow-sm hover:shadow-md"
+            >
+              <Github size={16} />
+              <span>GitHub</span>
+            </a>
+          </div>
+        </motion.div>
+
+        {/* Horizontal Scrolling Track */}
+        <div className="flex items-center mt-32 md:mt-40 relative z-10">
+          <motion.div 
+            style={{ x }} 
+            className="flex gap-8 px-[10vw] md:px-[20vw]"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="flex gap-8"
+              >
+                {activeProjects.map((project, index) => (
+                  <motion.div 
+                    key={project.title}
+                    initial={{ opacity: 0, x: 100, rotateY: -15 }}
+                    whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                    viewport={{ once: true, amount: 0.6 }}
+                    transition={{ duration: 0.8, type: "spring", bounce: 0.4, delay: index < 3 ? index * 0.15 + 0.3 : 0 }}
+                  >
+                    <ProjectCard project={project} index={index} activeCategory={activeCategory} />
+                  </motion.div>
+                ))}
+
+                {/* Final GitHub Explore Card */}
+                <motion.a 
+                  href="https://github.com/kavi419" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  initial={{ opacity: 0, x: 100, rotateY: -15 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
+                  className="group relative w-[85vw] sm:w-[400px] h-[500px] flex-shrink-0 flex flex-col justify-center items-center p-8 rounded-3xl bg-black/5 backdrop-blur-xl border border-black/10 hover:border-black/20 transition-all duration-500 hover:-translate-y-4 hover:bg-black/10 cursor-pointer shadow-sm hover:shadow-xl text-decoration-none"
+                >
+                  <Github size={80} className={`mb-8 transition-colors duration-500 ${activeCategory === 'web' ? 'text-black/10 group-hover:text-emerald-500/80' : 'text-black/10 group-hover:text-purple-500/80'}`} />
+                  <h3 className={`text-2xl font-black text-black tracking-tight transition-colors duration-500 text-center ${activeCategory === 'web' ? 'group-hover:text-emerald-600' : 'group-hover:text-purple-600'}`}>
+                    Explore More<br/>on GitHub
+                  </h3>
+                  <p className="text-black/50 mt-4 text-sm text-center leading-relaxed max-w-[250px] group-hover:text-black/70 transition-colors">
+                    Check out my full portfolio of open source projects and contributions.
+                  </p>
+                  
+                  <div className={`mt-8 px-6 py-2 rounded-full border border-black/10 text-xs font-bold uppercase tracking-widest transition-colors ${activeCategory === 'web' ? 'group-hover:bg-emerald-500/10 group-hover:border-emerald-500/30 group-hover:text-emerald-700' : 'group-hover:bg-purple-500/10 group-hover:border-purple-500/30 group-hover:text-purple-700'}`}>
+                    View Profile
+                  </div>
+                </motion.a>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
         </div>
         
-      </motion.div>
+      </div>
     </section>
   );
 };

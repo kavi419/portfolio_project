@@ -91,7 +91,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="relative w-full bg-white z-20 pt-16 pb-16 overflow-hidden">
+    <section className="relative w-full bg-white z-50 pt-16 pb-16 overflow-hidden">
       {/* Background decorations - Full width */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div 

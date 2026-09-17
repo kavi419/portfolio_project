@@ -56,8 +56,8 @@ const App = () => {
 
         // Collect all snap points
         const snapPoints = sections.map(id => {
-          const wrapper = document.getElementById(`wrapper-${id}`);
-          return wrapper ? wrapper.offsetTop : 0;
+          const section = document.getElementById(id);
+          return section ? section.offsetTop : 0;
         }).filter(pos => pos !== undefined);
 
         // Find the nearest snap point
@@ -125,27 +125,27 @@ const App = () => {
           <Sidebar />
 
           <main className="relative w-full">
-            <ParallaxCard id="wrapper-hero" zIndex={0} bgClass="bg-black">
+            <ParallaxCard id="hero" zIndex={0} bgClass="bg-black">
                <Hero />
             </ParallaxCard>
             
-            <ParallaxCard id="wrapper-whoiam" zIndex={10} bgClass="bg-white">
+            <ParallaxCard id="whoiam" zIndex={10} bgClass="bg-white">
               <WhoIAm />
             </ParallaxCard>
 
-            <ParallaxCard id="wrapper-skills" zIndex={20} bgClass="bg-black">
+            <ParallaxCard id="skills" zIndex={20} bgClass="bg-black">
               <BentoGrid />
             </ParallaxCard>
 
-            <ParallaxCard id="wrapper-projects" zIndex={30} bgClass="bg-white">
+            <ParallaxCard id="projects" zIndex={30} bgClass="bg-white">
               <Projects />
             </ParallaxCard>
-
-            <ParallaxCard id="wrapper-certificates" zIndex={40} bgClass="bg-black">
+            
+            <ParallaxCard id="certificates" zIndex={40} bgClass="bg-black">
               <Certificates />
             </ParallaxCard>
-
-            <ParallaxCard id="wrapper-contact" zIndex={50} bgClass="bg-white">
+            
+            <ParallaxCard id="contact" zIndex={50} bgClass="bg-white">
               <Contact />
             </ParallaxCard>
           </main>
